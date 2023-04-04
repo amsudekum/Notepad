@@ -5,6 +5,7 @@ const generateUniqueId = require('generate-unique-id')
 const uniqueId = generateUniqueId()
 const app= express(); 
 const PORT = process.env.PORT || 3001; 
+const dbJson = require('./db/db.json');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -12,12 +13,12 @@ app.use(express.static('public'));
 
 //.html GETS
 app.get('/', (req, res) => 
-res.sendFile(path.join(_dirname, '/public/index.html')))
+res.sendFile(path.join(__dirname, '/public/index.html')))
 app.get('/notes', (req, res) =>
-res.sendFile(path.join(_dirname, '/public/notes.html'))) 
+res.sendFile(path.join(__dirname, '/public/notes.html'))) 
 
 //api routes
-app.get('/api/notes', (req, res) => res.json(notes))
+app.get('/api/notes', (req, res) => res.json(dbJson))
 app.post('/api/notes', (req, res) => {
     const newNote = {
         title:req.body.title,
@@ -29,13 +30,13 @@ app.post('/api/notes', (req, res) => {
         if(err) {
             return res.status(500).json({error: 'Failed to read.'})
         }
-
+        debugger
         const notes = JSON.parse(data);
         notes.push (newNote);
 
         fs.writeFile('db.json', JSON.stringify(notes), (err) => {
             if(err) {
-                return res.status(500).json({ error: 'Failed wo write.'})
+                return res.status(500).json({ error: 'Failed to write.'})
             }
             res.json(newNote)
         })
@@ -44,4 +45,4 @@ app.post('/api/notes', (req, res) => {
 
 
 app.listen(PORT, () => 
-console.log(`API listening at http://localhose${PORT}`));
+console.log(`API listening at http://localhost:${PORT}`));
