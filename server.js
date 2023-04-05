@@ -50,6 +50,23 @@ app.post('/api/notes', (req, res) => {
     })
 })
 
+app.delete('/api/notes/:id', (req, res) =>{
+    let notes = JSON.parse(fs.readFileSync('./db/db.json', 'utf-8',))
+    let noteID = req.params.id.toString();
+
+    notes = notes.filter(selected =>{
+        return selected.id != noteID;
+    })
+
+    fs.writeFile('./db/db.json', JSON.stringify(notes), 'utf-8', (err) => {
+        if(err){
+            console.log(err)
+            return res.status(500).json({ error: 'Failed to write.'})
+        }
+        res.json(notes)
+    })
+});
+
 
 app.listen(PORT, () => 
 console.log(`API listening at http://localhost:${PORT}`));
